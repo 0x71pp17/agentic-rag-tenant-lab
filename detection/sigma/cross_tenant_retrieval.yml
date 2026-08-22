@@ -1,0 +1,40 @@
+title: Cross-Tenant Chunk Retrieval in Agentic RAG Session
+id: 8f2c1a94-3d7e-4b52-9c18-6a4f0e2d7b31
+status: experimental
+description: >
+  Detects a RAG agent retrieving a chunk whose tenant_id does not match the
+  session tenant, or whose tenant_id is null while the session tenant is not.
+  In a correctly configured multi-tenant deployment there is no benign case,
+  so this alerts on the defect rather than on attacker behaviour.
+author: '<handle>'
+date: 2026/08/17
+references:
+  - https://owasp.org/www-project-top-10-for-large-language-model-applications/
+  - ../signatures.md
+logsource:
+  product: rag_agent
+  service: retrieval
+detection:
+  selection_mismatch:
+    event_type: 'chunk_retrieved'
+    chunk_tenant_id|expand: '%session_tenant_id%'
+  selection_null:
+    event_type: 'chunk_retrieved'
+    chunk_tenant_id: null
+  filter_shared:
+    chunk_source: 'shared_policy_index'
+  condition: (not selection_mismatch or selection_null) and not filter_shared
+fields:
+  - session_id
+  - session_tenant_id
+  - chunk_id
+  - chunk_tenant_id
+  - chunk_source
+falsepositives:
+  - Documents intentionally published to a shared index. Scope these to an
+    explicit source rather than to a null tenant_id, or this rule cannot
+    distinguish them from the fail-open condition it exists to catch.
+level: high
+tags:
+  - attack.collection
+  - attack.t1213

@@ -1,0 +1,9 @@
+-r requirements.txt
+
+# Real vector database, for tests/test_chroma_parity.py. The core lab does not
+# need it; those tests skip automatically when it is absent.
+chromadb>=1.0
+
+# Realistic embeddings, for measuring rank-manipulation attacks. None of the
+# current attacks (A1-A5) depend on the embedding space.
+# sentence-transformers>=3.0
