@@ -21,6 +21,7 @@ Two structural properties matter for the attacks:
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -133,15 +134,30 @@ class Session:
         )
 
         transcript = user_block
+        seen: set[str] = set()
         for _ in range(self.max_iterations):
             response: ModelResponse = self.backend.complete(SYSTEM_PROMPT, transcript)
             trace.model_text = response.text
             if not response.tool_calls:
                 break
 
-            trace.tool_calls.extend(response.tool_calls)
-            observations: list[str] = []
+            # Deduplicate within the turn. The payload stays in the transcript
+            # across iterations, so an agent that re-reads it will re-emit the
+            # same call every pass. Real agents loop this way too; counting the
+            # repeats would inflate the tool-call record without adding an
+            # action, and the exfil oracle would be unaffected either way.
+            fresh = []
             for call in response.tool_calls:
+                key = json.dumps(call, sort_keys=True, default=str)
+                if key not in seen:
+                    seen.add(key)
+                    fresh.append(call)
+            if not fresh:
+                break
+
+            trace.tool_calls.extend(fresh)
+            observations: list[str] = []
+            for call in fresh:
                 name = str(call.get("tool", ""))
                 args = call.get("args", {})
                 if not isinstance(args, dict):

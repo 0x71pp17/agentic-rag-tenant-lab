@@ -10,9 +10,9 @@ backed by a measured attack success rate rather than a screenshot.
 git clone https://github.com/0x71pp17/agentic-rag-tenant-lab
 cd agentic-rag-tenant-lab
 pip install -r requirements.txt
-make test          # 23 core tests, numpy only, no model required
+make test          # 27 core tests, numpy only, no model required
 make sweep         # ASR matrix, no model required
-make test-parity   # +5 tests against a real vector DB (Chroma), 28 total
+make test-parity   # +5 tests against a real vector DB (Chroma), 32 total
 make sweep-ollama  # real model measurement
 ```
 
@@ -193,8 +193,11 @@ lab/        the system under test  (config, embeddings, store, store_chroma,
                                     corpus)
 attack/     the attack corpus      (A1-A5)
 harness/    measurement            (runner, report)
-tests/      28 tests, each mapping to a claim in this README
-            (23 core + 5 Chroma parity, which skip without chromadb)
+tests/      32 tests, each mapping to a claim in this README
+            (27 core + 5 Chroma parity, which skip without chromadb).
+            Four assert the MECHANISM of an attack, not just its outcome:
+            the ASR oracle cannot tell whether an attack succeeded by the
+            route it documents.
 results/    committed ASR output (a CI fixture, not just documentation)
 docs/       how-it-works, threat-model
 detection/  what the attack looks like in traces (blue-team half)
