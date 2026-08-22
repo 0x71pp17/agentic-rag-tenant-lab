@@ -1,15 +1,18 @@
 # Agentic RAG Tenant-Isolation Lab
 
+[![ci](https://github.com/0x71pp17/agentic-rag-tenant-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/0x71pp17/agentic-rag-tenant-lab/actions/workflows/ci.yml)
+
 A multi-tenant agentic RAG system, built with the defenses a competent team would
 actually ship, and then broken. Every finding is reproducible, and every claim is
 backed by a measured attack success rate rather than a screenshot.
 
 ```bash
-git clone <repo> && cd agentic-rag-tenant-lab
+git clone https://github.com/0x71pp17/agentic-rag-tenant-lab
+cd agentic-rag-tenant-lab
 pip install -r requirements.txt
-make test          # 23 tests, numpy only, no model required
+make test          # 23 core tests, numpy only, no model required
 make sweep         # ASR matrix, no model required
-make test-parity   # same findings against a real vector DB (Chroma)
+make test-parity   # +5 tests against a real vector DB (Chroma), 28 total
 make sweep-ollama  # real model measurement
 ```
 
@@ -185,15 +188,21 @@ require `--backend ollama:MODEL` or `--backend anthropic:MODEL`.
 ## Layout
 
 ```
-lab/        the system under test  (config, embeddings, store, ingest,
-                                    defenses, tools, agent, backends, corpus)
+lab/        the system under test  (config, embeddings, store, store_chroma,
+                                    ingest, defenses, tools, agent, backends,
+                                    corpus)
 attack/     the attack corpus      (A1-A5)
 harness/    measurement            (runner, report)
-tests/      23 tests, each mapping to a claim in this README
-results/    committed ASR output
-docs/       threat model, per-finding writeups, remediation
+tests/      28 tests, each mapping to a claim in this README
+            (23 core + 5 Chroma parity, which skip without chromadb)
+results/    committed ASR output (a CI fixture, not just documentation)
+docs/       how-it-works, threat-model
 detection/  what the attack looks like in traces (blue-team half)
 ```
+
+`verify-layout.sh` checks that the tree is intact after a clone, download or
+extract. Run it first if anything behaves oddly; a flattened or partial copy
+fails in confusing ways.
 
 If a claim in this README is not backed by a test in `tests/`, it should not be
 in this README.
