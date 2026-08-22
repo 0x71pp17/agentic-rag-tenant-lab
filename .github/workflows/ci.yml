@@ -48,16 +48,27 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-optional.txt
 
-      # Chroma is a real vector database, so this job answers the question a
-      # reviewer will ask: are the findings artifacts of the hand-written store
-      # in lab/store.py? These tests assert they reproduce against Chroma, and
-      # one asserts a documented negative result (V1 does not transfer verbatim,
-      # because Chroma fails closed on a missing metadata key).
+      # Falsifiability check. lab/store.py is a real retrieval implementation, but
+      # it was written for this lab, so a finding that only reproduces there is
+      # indistinguishable from a defect in the lab itself. Chroma is a production
+      # vector database; tests/test_chroma_parity.py runs the same findings against
+      # it. One test asserts a documented negative result: V1 does not transfer
+      # verbatim, because Chroma fails closed on a missing metadata key.
       - name: Install with optional deps
         run: pip install -r requirements-optional.txt
 
+      # tests/test_chroma_parity.py opens with pytest.importorskip("chromadb").
+      # Targeted at the file directly, a missing Chroma yields exit 5 (no tests
+      # collected), which does fail the job but reports it opaquely. Run against
+      # the whole tests/ directory it would skip silently among the core passes
+      # and exit 0. Assert the dependency is present so the failure names itself
+      # either way, and pin the version into the log so the parity claim in the
+      # README is tied to a specific Chroma release.
+      - name: Confirm the real vector DB is present
+        run: python -c "import chromadb; print('chromadb', chromadb.__version__)"
+
       - name: Run parity tests
-        run: python -m pytest tests/test_chroma_parity.py -v
+        run: python -m pytest tests/test_chroma_parity.py -v -rs
 
   matrix-regression:
     name: ASR matrix regression
