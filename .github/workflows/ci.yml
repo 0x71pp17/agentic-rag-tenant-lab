@@ -48,12 +48,13 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-optional.txt
 
-      # Falsifiability check. lab/store.py is a real retrieval implementation, but
-      # it was written for this lab, so a finding that only reproduces there is
-      # indistinguishable from a defect in the lab itself. Chroma is a production
-      # vector database; tests/test_chroma_parity.py runs the same findings against
-      # it. One test asserts a documented negative result: V1 does not transfer
-      # verbatim, because Chroma fails closed on a missing metadata key.
+      # Falsifiability check. lab/store.py implements retrieval for this lab, so
+      # results measured against it are results about this lab. Chroma is an
+      # independent implementation of the same retrieval contract, so a finding
+      # that holds against both is a property of the architecture rather than of
+      # one codebase. tests/test_chroma_parity.py runs the findings against
+      # Chroma. One test asserts a documented negative result: V1 does not
+      # transfer verbatim, because Chroma fails closed on a missing metadata key.
       - name: Install with optional deps
         run: pip install -r requirements-optional.txt
 
