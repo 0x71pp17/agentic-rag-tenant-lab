@@ -109,9 +109,9 @@ make sweep-anthropic
 configuration needed; push the repo and it works.
 
 - **`test`** runs the suite across Python 3.11, 3.12 and 3.13 with pip caching.
-- **`parity`** installs ChromaDB and runs the findings against a real vector
-  database, which answers the question a reviewer will ask about whether the
-  bugs are artifacts of the hand-written store.
+- **`parity`** installs ChromaDB and runs the findings against a production
+  vector database, which is what separates a finding about multi-tenant RAG from
+  a defect in the hand-written store.
 - **`matrix-regression`** regenerates the ASR matrix and diffs it against the
   committed `results/asr-scripted.md`. This is the gate that matters. If a
   defense layer regresses, or a payload is accidentally weakened, a cell changes
