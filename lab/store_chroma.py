@@ -1,10 +1,11 @@
 """ChromaDB-backed store, implementing the same interface as `store.VectorStore`.
 
-Why this file exists: the hand-written store in `store.py` is a real retrieval
-implementation, but it is *mine*, so a reasonable reviewer will ask whether the
-findings are artifacts of my own code. They are not. This adapter runs the same
-attacks against a real vector database, and `tests/test_chroma_parity.py` asserts
-that the results match.
+Why this file exists: generalizability. `store.py` implements retrieval for this
+lab, so results measured against it are results about this lab. Chroma is an
+independent implementation of the same retrieval contract, so a finding that
+holds against both is a property of the architecture rather than of one
+codebase. `tests/test_chroma_parity.py` runs the findings against Chroma and
+asserts the results match.
 
 One finding did NOT transfer verbatim, and saying so is more useful than a clean
 parity claim:
