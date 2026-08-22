@@ -103,9 +103,11 @@ authorization code is correct; it just runs against a unit the model never sees.
 
 ### Do these reproduce in a real vector database?
 
-`lab/store.py` is a real retrieval implementation, but it is *mine*, so the fair
-question is whether the findings are artifacts of my own code. They are not.
-`lab/store_chroma.py` is a ChromaDB-backed adapter behind the same interface, and
+`lab/store.py` implements retrieval for this lab, so results measured against it
+are results about this lab. Chroma is an independent implementation of the same
+retrieval contract, so a finding that holds against both is a property of the
+architecture rather than of one codebase. `lab/store_chroma.py` is a
+ChromaDB-backed adapter behind the same interface, and
 `tests/test_chroma_parity.py` runs the findings against it in CI.
 
 | Finding | Transfers to Chroma |
