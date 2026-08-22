@@ -6,7 +6,7 @@ description: >
   session tenant, or whose tenant_id is null while the session tenant is not.
   In a correctly configured multi-tenant deployment there is no benign case,
   so this alerts on the defect rather than on attacker behaviour.
-author: '<handle>'
+author: 0x71pp17
 date: 2026/08/17
 references:
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/
