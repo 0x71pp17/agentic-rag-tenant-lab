@@ -1,6 +1,10 @@
 # Agentic RAG Tenant-Isolation Lab
 
 [![ci](https://github.com/0x71pp17/agentic-rag-tenant-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/0x71pp17/agentic-rag-tenant-lab/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-3776AB?logo=python&logoColor=white)
+![OWASP](https://img.shields.io/badge/OWASP_LLM_Top_10-2025-000000?logo=owasp&logoColor=white)
+![MITRE ATLAS](https://img.shields.io/badge/MITRE_ATLAS-v5.6.0-C8102E)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 A multi-tenant agentic RAG system, built with the defenses a competent team would
 actually ship, and then broken. Every finding is reproducible, and every claim is
@@ -136,13 +140,23 @@ attacker qualify for the exception.
 
 ## The attacks (`attack/attacks.py`)
 
-| | Attack | Beats | OWASP |
-|---|---|---|---|
-| A1 | Direct override, *control* | nothing (must fail) | LLM01 |
-| A2 | Tenant crossing; attacker reads victim's secret, no model involved | D1 through D5 entirely | LLM08 / API6 |
-| A3 | Declarative payload; identical effect to A1, documentation register | D2 | LLM01 |
-| A4 | Memory persistence; lands turn 1, fires turn 2 | D1, D2 (per-turn evaluation) | LLM01 + ASI memory poisoning |
-| A5 | Sanctioned channel; never contacts a blocked domain | D3 | LLM02 |
+| | Attack | Targets | OWASP | MITRE ATLAS |
+|---|---|---|---|---|
+| A1 | Direct override, *control* | D2 (control: must fail) | LLM01 | AML.T0051 |
+| A2 | Tenant crossing; attacker reads victim's secret, no model involved | V1/V3/V4, unaffected by D1 through D5 | LLM08 / API6 | AML.T0085.000, AML.T0082 |
+| A3 | Declarative payload; identical effect to A1, documentation register | D2 | LLM01 | AML.T0070, AML.T0066 |
+| A4 | Memory persistence; lands turn 1, fires turn 2 | D1, D2 (per-turn evaluation) | LLM01 + ASI memory poisoning | AML.T0080.000 |
+| A5 | Sanctioned channel; never contacts a blocked domain | D3 | LLM02 | AML.T0086 |
+
+"Targets" is the control an attack is designed against, matching the `targets`
+field on each `Attack` in `attack/attacks.py`. Targeting is not the same as
+defeating: A1 targets D2 and is stopped by it, which is what makes it the control.
+
+ATLAS technique IDs are from MITRE ATLAS v5.6.0. The column heading is spelled
+out to avoid confusion with MITRE ATT&CK, which is a separate framework tagged in
+`detection/sigma/`. The two join at `AML.T0036` Data from Information
+Repositories, which ATLAS cross-references to ATT&CK `T1213`, the technique that
+rule already carries. V4 additionally maps to `AML.T0071` False RAG Entry Injection.
 
 A3 is the central claim: the classifier's every signature describes *imperative*
 text, so a payload written as a runbook scores zero while changing what the agent
