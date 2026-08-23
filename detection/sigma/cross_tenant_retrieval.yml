@@ -23,7 +23,7 @@ detection:
     chunk_tenant_id: null
   filter_shared:
     chunk_source: 'shared_policy_index'
-  condition: (not selection_mismatch or selection_null) and not filter_shared
+  condition: (selection_mismatch or selection_null) and not filter_shared
 fields:
   - session_id
   - session_tenant_id
@@ -38,3 +38,10 @@ level: high
 tags:
   - attack.collection
   - attack.t1213
+
+  # ATLAS is the AI-specific taxonomy; the `atlas.` prefix is community
+  # convention rather than a namespace the Sigma spec defines, so a strict
+  # validator may flag it. AML.T0036 is MITRE's own cross-reference to T1213.
+  - atlas.aml.t0036      # Data from Information Repositories (= ATT&CK T1213)
+  - atlas.aml.t0085.000  # Data from AI Services: RAG Databases
+  - atlas.aml.t0082      # RAG Credential Harvesting
