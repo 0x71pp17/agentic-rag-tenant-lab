@@ -126,6 +126,10 @@ class ScriptedBackend:
     def __init__(self, susceptible: bool = True) -> None:
         self.susceptible = susceptible
 
+    @property
+    def params(self) -> dict[str, Any]:
+        return {"deterministic": True, "susceptible": self.susceptible}
+
     def complete(self, system: str, user: str) -> ModelResponse:
         calls: list[dict[str, Any]] = []
         blob = f"{system}\n{user}"
@@ -265,6 +269,10 @@ class OllamaBackend:
         self.temperature = temperature
         self.seed = seed
 
+    @property
+    def params(self) -> dict[str, Any]:
+        return {"temperature": self.temperature, "seed": self.seed, "host": self.host}
+
     def complete(self, system: str, user: str) -> ModelResponse:
         import requests  # noqa: PLC0415
 
@@ -297,6 +305,12 @@ class AnthropicBackend:
         self.model = model
         self.name = f"anthropic:{model}"
         self.max_tokens = max_tokens
+
+    @property
+    def params(self) -> dict[str, Any]:
+        # Hosted models change under you. Without a pinned version string and a
+        # date, a number published here is not reproducible later.
+        return {"max_tokens": self.max_tokens, "hosted": True}
 
     def complete(self, system: str, user: str) -> ModelResponse:
         import requests  # noqa: PLC0415
