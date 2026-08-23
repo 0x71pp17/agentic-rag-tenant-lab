@@ -125,9 +125,6 @@ needs no model, no GPU and no API key. Real model measurement stays local
 Actions or maintaining a self-hosted runner with Ollama, and neither is worth it
 for a repo whose whole point is that anyone can reproduce the results.
 
-A `.gitlab-ci.yml` mirroring the same two jobs is included, for mirroring to a
-GitLab instance. If you are not mirroring, delete it; nothing else references it.
-
 ## Extending it
 
 **Add a defense.** Add a flag to `LabConfig`, implement it in `defenses.py` with
